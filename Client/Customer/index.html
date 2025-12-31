@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASTE DISPOSAL TRACKING AND REMOVAL MANAGEMENT SOFTWARE/SYSTEM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-blue-50 text-gray-800 font-sans leading-relaxed">
+
+<nav class="sticky top-0 z-50 bg-white shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center h-auto md:h-20 py-3 md:py-0">
+            
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center space-x-2">
+                    <span class="text-4xl text-emerald-600">♻️</span>
+                    <span class="font-bold text-xl tracking-tight text-gray-800">Kano CleanRoute: Intelligent Logistics</span>
+                    <span id="loading-message-nav" class="ml-4 text-xs font-medium text-gray-500"></span>
+                </div>
+                
+                <div class="flex items-center space-x-3 md:hidden">
+                    <div id="auth-controls-mobile" class="flex space-x-2">
+                        <button onclick="showModal('register')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-md">REGISTER</button>
+                        <button onclick="showModal('login')" class="bg-white border border-emerald-600 text-emerald-600 hover:bg-emerald-50 text-xs font-semibold py-1.5 px-3 rounded-lg">LOG IN</button>
+                    </div>
+                    <div id="user-controls-mobile" class="flex items-center space-x-2 hidden">
+                        <span id="user-display-mobile" class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full"></span>
+                        <button onclick="appLogOut()" class="text-red-500 hover:text-red-700 text-xs font-semibold py-1.5 px-2 transition-colors">Log Out</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center space-x-4">
+                <div id="auth-controls" class="flex space-x-3">
+                    <button onclick="showModal('register')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors shadow-md">REGISTER</button>
+                    <button onclick="showModal('login')" class="bg-white border border-emerald-600 text-emerald-600 hover:bg-emerald-50 text-sm font-semibold py-2 px-4 rounded-lg transition-colors">LOG IN</button>
+                </div>
+                <div id="user-controls" class="flex items-center space-x-3 hidden">
+                    <span id="user-display" class="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full"></span>
+                    <button onclick="appLogOut()" class="text-red-500 hover:text-red-700 text-sm font-semibold py-2 px-3 transition-colors">Log Out</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center space-x-3 md:space-x-8 border-t border-blue-100 pt-3 pb-3 overflow-x-auto whitespace-nowrap">
+            <button onclick="switchTab('home')" id="nav-home" class="tab-active px-3 py-2 text-sm font-medium transition-colors hover:text-emerald-600">Home</button>
+            <button onclick="handleGuardedTabSwitch('schedule')" id="nav-schedule" class="px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-600">My Schedule</button>
+            <button onclick="switchTab('guide')" id="nav-guide" class="px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-600">Recycling Guide</button>
+            <button onclick="handleGuardedTabSwitch('report')" id="nav-report" class="px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-600">Report Issue</button>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <div id="home" class="space-y-8 transition-fade">
+        <div class="hero-bg p-10 md:p-16 rounded-3xl shadow-xl text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Clean City, Better Living.</h1>
+            <p class="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+                Your portal for managing waste collection, checking schedules, and ensuring a sustainable Kano via CleanRoute KCR.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <button onclick="showModal('payment')" class="bg-amber-500 hover:bg-amber-600 text-white text-lg font-bold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-[1.05]">💰 Pay My Bill</button>
+                <button onclick="handleGuardedTabSwitch('report')" class="bg-white text-cyan-600 hover:bg-gray-100 text-lg font-bold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-[1.05]">🚨 Report Missed Pickup</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 text-center hover:shadow-md transition-shadow">
+                <span class="text-4xl text-emerald-500 mb-3 block">🗓️</span>
+                <h3 class="font-bold text-gray-800">Check Your Schedule</h3>
+                <p class="text-sm text-gray-500">Find out exactly when we are collecting next.</p>
+                <button onclick="handleGuardedTabSwitch('schedule')" class="mt-4 text-emerald-600 text-sm font-semibold hover:underline">Go to Schedule &rarr;</button>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 text-center hover:shadow-md transition-shadow">
+                <span class="text-4xl text-cyan-500 mb-3 block">🔎</span>
+                <h3 class="font-bold text-gray-800">Recycling Lookup</h3>
+                <p class="text-sm text-gray-500">Not sure where an item goes? Search here.</p>
+                <button onclick="switchTab('guide')" class="mt-4 text-emerald-600 text-sm font-semibold hover:underline">Use Disposal Guide &rarr;</button>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 text-center hover:shadow-md transition-shadow">
+                <span class="text-4xl text-blue-500 mb-3 block">🚛</span>
+                <h3 class="font-bold text-gray-800">Truck Tracking</h3>
+                <p class="text-sm text-gray-500">View real-time status of collection routes (for registered users).</p>
+                <button onclick="showModal('login')" class="mt-4 text-emerald-600 text-sm font-semibold hover:underline">Log In to Track &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="schedule" class="hidden space-y-8 transition-fade">
+         </div>
+
+    <div id="guide" class="hidden space-y-8 transition-fade">
+         <div class="mb-6 max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Recycling & Disposal Guide</h2>
+            <p class="text-gray-600">Search for any item below to know if it's accepted in your recycling bin and how to prepare it.</p>
+        </div>
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl mx-auto space-y-6">
+            <input type="text" id="guide-search" oninput="filterGuide()" placeholder="Type item here (e.g., 'plastic bottle', 'broken glass', 'oil')" class="w-full border border-gray-300 rounded-lg p-3 text-lg focus:ring-emerald-500 focus:border-emerald-500" />
+            <div id="guide-results" class="space-y-4"></div>
+            <p id="no-results-message" class="text-center text-gray-500 hidden pt-4">No results found for your search term.</p>
+        </div>
+    </div>
+
+    <div id="report" class="hidden space-y-8 transition-fade">
+         </div>
+</main>
+
+<footer class="bg-cyan-900 text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="text-sm opacity-80">A collaboration for cleaner urban spaces.</p>
+        <p class="text-xs mt-2 opacity-50">Kano CleanRoute (KCR) | Supported by REMASAB & KAROTA Logistics.</p>
+        <p class="text-xs mt-1 opacity-50">© 2025 Kano CleanRoute: Intelligent Logistics. All rights reserved.</p>
+    </div>
+</footer>
+
+<div id="register-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full relative overflow-y-auto max-h-[90vh]">
+        <button onclick="hideModal('register-modal')" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">&times;</button>
+        <h3 class="text-2xl font-bold text-emerald-600 mb-2">Resident Registration</h3>
+        <p class="text-gray-600 mb-6 text-sm">Please provide your details to access personalized services.</p>
+        <form onsubmit="event.preventDefault(); simulateRegistration();" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="block text-sm font-medium text-gray-700">Full Name</label><input type="text" id="reg-name" required class="w-full border p-3 rounded-lg" /></div>
+                <div><label class="block text-sm font-medium text-gray-700">Phone Number</label><input type="tel" id="reg-phone" required class="w-full border p-3 rounded-lg" /></div>
+            </div>
+            <div class="pt-2"><label class="block text-sm font-medium text-gray-700">Street Address</label><input type="text" id="reg-address" required placeholder="e.g., No. 4, Bello Road" class="w-full border p-3 rounded-lg" /></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="block text-sm font-medium text-gray-700">House/Flat Number</label><input type="text" id="reg-house-number" required placeholder="e.g., A12" class="w-full border p-3 rounded-lg" /></div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Senatorial District</label>
+                    <select id="reg-senatorial" required class="w-full border p-3 rounded-lg bg-white">
+                        <option value="">Select District</option>
+                        <option value="north">Kano North</option>
+                        <option value="central">Kano Central</option>
+                        <option value="south">Kano South</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pt-2">
+                <label class="block text-sm font-medium text-gray-700">LGA/Area Council</label>
+                <select id="reg-lga" required class="w-full border p-3 rounded-lg bg-white"><option value="">Loading LGAs...</option></select>
+            </div>
+            <div class="pt-2"><label class="block text-sm font-medium text-gray-700">Choose Password</label><input type="password" id="reg-password" required class="w-full border p-3 rounded-lg" /></div>
+            <div id="reg-error" class="text-red-500 text-sm hidden"></div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">COMPLETE REGISTRATION</button>
+        </form>
+    </div>
+</div>
+
+<div id="login-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full relative">
+        <button onclick="hideModal('login-modal')" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">&times;</button>
+        <h3 class="text-2xl font-bold text-emerald-600 mb-4">Resident Login</h3>
+        <p class="text-gray-600 mb-6 text-sm">Enter your registered details to log into your account.</p>
+        <form onsubmit="event.preventDefault(); simulateLogin();" class="space-y-4">
+            <div><label class="block text-sm font-medium text-gray-700">Email / Resident ID</label><input type="text" id="login-id" required value="demo@kano.gov" class="w-full border p-3 rounded-lg" /></div>
+            <div><label class="block text-sm font-medium text-gray-700">Password</label><input type="password" id="login-password" required value="password123" class="w-full border p-3 rounded-lg" /></div>
+            <div id="login-error-msg" class="text-red-500 text-sm hidden"></div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">LOG IN</button>
+        </form>
+        <p class="text-xs text-center text-gray-400 mt-4">Demo: Use demo@kano.gov and password123.</p>
+    </div>
+</div>
+
+<div id="generic-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full relative">
+        <button onclick="hideModal('generic-modal')" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">&times;</button>
+        <h3 id="generic-modal-title" class="text-2xl font-bold text-emerald-600 mb-4"></h3>
+        <p class="text-gray-600 mb-6"><span id="generic-modal-text"></span></p>
+        <button onclick="hideModal('generic-modal')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">Continue</button>
+    </div>
+</div>
+
+<script src="Js/app.js"></script>
+<script src="Js/auth.js"></script>
+<script src="Js/schedule.js"></script>
+<script src="Js/guide.js"></script>
+<script src="Js/report.js"></script>
+
+</body>
+</html>

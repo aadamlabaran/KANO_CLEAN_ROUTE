@@ -1,0 +1,97 @@
+/* Corporate Color Palette */
+:root {
+    --primary: #2563eb; /* Blue-600 */
+    --secondary: #60a5fa; /* Blue-400 */
+    --success: #10b981; /* Emerald-500 */
+    --warning: #f59e0b; /* Amber-500 */
+    --danger: #ef4444; /* Red-500 */
+    --bg-light: #f7f7f7;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: #1f2937;
+}
+
+.dashboard-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s;
+}
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Active Tab State */
+.tab-active {
+    border-bottom: 3px solid var(--primary);
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Chart Container Styling */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Live Map Simulation Styles */
+.map-sim {
+    background-color: #e0f2f7; /* Cyan-50 */
+    height: 450px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #94a3b8;
+}
+
+/* Truck/Bin Marker Styling */
+.status-marker {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+}
+@keyframes pulse-yellow {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+.bin-alert {
+    animation: pulse-yellow 2s infinite;
+}
+
+/* Compliance Table Scroll */
+.table-scroll {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+/* Modal overlay */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 60;
+}
+
+/* Login Screen Styling */
+.login-card {
+    max-width: 400px;
+    margin: 10vh auto 0;
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-top: 5px solid var(--primary); 
+}

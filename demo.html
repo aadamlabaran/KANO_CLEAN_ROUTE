@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KANO CLEANROUTE | Central Access</title>
+    <style>
+        /* --- 1. MODERN DESIGN SYSTEM --- */
+        :root {
+            /* Brand Colors */
+            --brand-primary: #0f766e;      /* Deep Teal */
+            --brand-secondary: #2dd4bf;    /* Bright Teal */
+            --brand-dark: #115e59;
+            
+            /* UI Colors */
+            --bg-body: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            
+            /* Footer Specific */
+            --footer-bg: #0f172a;          /* Slate 900 */
+            --footer-text: #94a3b8;        /* Slate 400 */
+            --footer-head: #f1f5f9;        /* Slate 100 */
+
+            /* Accents */
+            --role-resident: #10b981; 
+            --role-driver: #3b82f6;   
+            --role-admin: #6366f1;    
+
+            /* Shadows */
+            --shadow-card: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* --- 2. HEADER & HERO --- */
+        header {
+            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
+            color: white;
+            padding: 0 2rem;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 50;
+        }
+        
+        .brand-wrapper { display: flex; align-items: center; gap: 0.75rem; }
+        .brand-logo { font-size: 1.75rem; }
+        .brand-text { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.025em; }
+
+        .system-status {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.35rem 0.85rem;
+            border-radius: 99px;
+            font-size: 0.75rem; font-weight: 600;
+            display: flex; align-items: center; gap: 0.5rem;
+            backdrop-filter: blur(4px);
+        }
+        .status-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; box-shadow: 0 0 8px #34d399; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .hero-section {
+            background: white;
+            text-align: center;
+            padding: 4rem 1.5rem 3rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .hero-title {
+            font-size: 2.5rem; font-weight: 900; color: var(--text-main);
+            margin-bottom: 1rem; letter-spacing: -0.05em;
+            background: linear-gradient(to right, var(--brand-dark), var(--brand-primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.1rem; color: var(--text-muted); max-width: 700px; margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* --- 3. PORTAL CARDS --- */
+        .portal-container {
+            flex: 1;
+            max-width: 1200px; width: 100%; margin: 0 auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .portal-card {
+            background: var(--surface);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: var(--shadow-card);
+        }
+
+        .portal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(15, 118, 110, 0.3);
+        }
+
+        .card-bar { position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        
+        .icon-circle {
+            width: 80px; height: 80px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .portal-card:hover .icon-circle { transform: scale(1.1) rotate(5deg); }
+
+        .card-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main); }
+        .card-desc { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem; line-height: 1.5; flex-grow: 1; }
+
+        /* Role Styles */
+        .role-resident .card-bar { background: var(--role-resident); }
+        .role-resident .icon-circle { background: #ecfdf5; color: var(--role-resident); }
+        
+        .role-driver .card-bar { background: var(--role-driver); }
+        .role-driver .icon-circle { background: #eff6ff; color: var(--role-driver); }
+        
+        .role-admin .card-bar { background: var(--role-admin); }
+        .role-admin .icon-circle { background: #eef2ff; color: var(--role-admin); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            width: 100%; padding: 0.875rem;
+            border-radius: 0.5rem; text-decoration: none;
+            font-weight: 600; font-size: 0.95rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-resident { background: var(--role-resident); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .btn-resident:hover { background: #059669; }
+        .btn-driver { background: var(--role-driver); color: white; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+        .btn-driver:hover { background: #2563eb; }
+        .btn-admin { background: white; border: 2px solid var(--role-admin); color: var(--role-admin); }
+        .btn-admin:hover { background: var(--role-admin); color: white; }
+
+        /* --- 4. PROFESSIONAL FOOTER --- */
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 4rem 2rem 2rem 2rem;
+            border-top: 4px solid var(--brand-primary);
+        }
+
+        .footer-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 { color: var(--footer-head); margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .footer-brand p { font-size: 0.9rem; line-height: 1.6; max-width: 400px; }
+        .acronym { color: var(--brand-secondary); font-weight: 700; letter-spacing: 0.05em; font-size: 0.8rem; margin-top: 0.5rem; display: block; }
+
+        .footer-col h4 { color: var(--footer-head); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 0.75rem; }
+        .footer-links a { color: var(--footer-text); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--brand-secondary); }
+
+        .agency-list { font-size: 0.85rem; line-height: 1.8; }
+        .agency-list span { color: var(--footer-head); font-weight: 600; }
+
+        .footer-bottom {
+            max-width: 1200px; margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Animations */
+        .fade-in { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .portal-container { padding: 2rem 1rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-wrapper">
+            <span class="brand-logo">♻️</span>
+            <span class="brand-text">KANO CLEANROUTE</span>
+        </div>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            SYSTEM OPERATIONAL
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <h1 class="hero-title fade-in">Smart Waste Logistics for a Greener Kano.</h1>
+        <p class="hero-subtitle fade-in delay-1">
+            The unified digital infrastructure connecting residents, municipal fleets, and central command for efficient urban waste management.
+        </p>
+    </section>
+
+    <div class="portal-container">
+        
+        <div class="portal-card role-resident fade-in delay-1">
+            <div class="card-bar"></div>
+            <div class="icon-circle">🏡</div>
+            <h2 class="card-title">Resident Hub</h2>
+            <p class="card-desc">
+                Schedule trash pickups, track recycling impact, and report neighborhood sanitation issues instantly.
+            </p>
+            <a href="Customer/index.html" class="btn btn-resident">
+                Access Resident Portal &rarr;
+            </a>
+        </div>
+
+        <div class="portal-card role-driver fade-in delay-2">
+            <div class="card-bar"></div>
+            <div class="icon-circle">🚛</div>
+            <h2 class="card-title">Fleet Dispatch</h2>
+            <p class="card-desc">
+                Logistics terminal for drivers. Access optimized routes, log disposal weights, and sync offline data.
+            </p>
+            <a href="Driver/index.html" class="btn btn-driver">
+                Launch Driver App &rarr;
+            </a>
+        </div>
+
+        <div class="portal-card role-admin fade-in delay-3">
+            <div class="card-bar"></div>
+            <div class="icon-circle">🛡️</div>
+            <h2 class="card-title">Command Center</h2>
+            <p class="card-desc">
+                Restricted area. Monitor fleet analytics, manage route efficiency, and generate compliance audits.
+            </p>
+            <a href="Admin/index.html" class="btn btn-admin">
+                Secure Login 🔐
+            </a>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            
+            <div class="footer-brand">
+                <h3>KANO CLEANROUTE</h3>
+                <span class="acronym">WASTE DISPOSAL TRACKING & REMOVAL MANAGEMENT SYSTEM (W.D.T.R.M.S.)</span>
+                <p style="margin-top: 1rem;">
+                    A state-of-the-art logistics platform designed to optimize urban sanitation efficiency through real-time data integration and fleet tracking.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Strategic Partners</h4>
+                <div class="agency-list">
+                    <p>In official collaboration with:</p>
+                    <p>🏛️ <span>REMASAB</span><br><span style="font-size: 0.75rem; opacity: 0.7;">(Refuse Management & Sanitation Board)</span></p>
+                    <p style="margin-top:0.5rem;">🚦 <span>KAROTA</span><br><span style="font-size: 0.75rem; opacity: 0.7;">(Kano Road and Traffic Agency)</span></p>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>System Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">System Status</a></li>
+                    <li><a href="#">Help Desk</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2025 Kano State CleanRoute Initiative. All Rights Reserved.<br>
+            W.D.T.R.M.S. v2.5.0 | Secure Government Infrastructure
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                console.log(`Navigation initialized: ${this.getAttribute('href')}`);
+            });
+        });
+    </script>
+
+</body>
+</html>
