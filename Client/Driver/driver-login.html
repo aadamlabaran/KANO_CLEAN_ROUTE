@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Login</title>
+    <style>
+        body { margin: 0; height: 100vh; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; background: #ecfdf5; }
+        .login-card { background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 380px; text-align: center; border: 1px solid #d1fae5; }
+        
+        h1 { color: #047857; margin: 0.5rem 0 0; font-size: 1.5rem; }
+        input { width: 100%; padding: 12px; border: 1px solid #a7f3d0; border-radius: 8px; box-sizing: border-box; background: #f0fdf4; margin-bottom: 1rem; }
+        button { width: 100%; padding: 14px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #059669; }
+        .icon { font-size: 3rem; background: #d1fae5; width: 80px; height: 80px; line-height: 80px; border-radius: 50%; margin: 0 auto 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="icon">🚛</div>
+        <h1>Fleet Portal</h1>
+        <p style="color: #64748b; margin-bottom: 2rem;">Authorized Driver Access Only</p>
+
+        <form id="loginForm" autocomplete="off">
+            
+            <label style="display:block; text-align:left; font-size:0.8rem; font-weight:bold; color:#065f46; margin-bottom:5px;">DRIVER ID</label>
+            <input type="text" id="username" placeholder="Enter Driver ID" required autocomplete="new-password">
+
+            <label style="display:block; text-align:left; font-size:0.8rem; font-weight:bold; color:#065f46; margin-bottom:5px;">TRUCK PIN</label>
+            <input type="password" id="password" placeholder="Enter PIN" required autocomplete="new-password">
+            
+            <button type="submit">START SHIFT</button>
+            <p id="error-msg" style="color: #ef4444; font-size: 0.8rem; margin-top: 1rem; display: none;"></p>
+        </form>
+    </div>
+
+    <script src="/js/auth.js"></script>
+
+</body>
+</html>

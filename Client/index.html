@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KANO CLEANROUTE | Waste Management Solution</title>
+    <style>
+        /* --- LANDING PAGE STYLES --- */
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f8fafc; color: #334155; }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 1rem;
+        }
+        .hero h1 { font-size: 3rem; margin: 0; font-weight: 800; }
+        .hero p { font-size: 1.2rem; opacity: 0.9; margin-top: 1rem; }
+
+        /* Portal Grid */
+        .portal-container {
+            max-width: 1000px;
+            margin: -3rem auto 0;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Portal Cards */
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+            border: 1px solid #e2e8f0;
+            text-decoration: none; /* Remove link underline */
+            color: inherit;
+            display: block;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #0f766e; }
+
+        .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+        .role-title { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; }
+        .role-desc { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+        
+        .btn-fake {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .card:hover .btn-fake { background: #0f766e; color: white; }
+
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <div style="font-size: 4rem;">♻️</div>
+        <h1>KANO CLEANROUTE</h1>
+        <p>Smart Waste Management & Logistics System</p>
+    </div>
+
+    <div class="portal-container">
+        
+        <a href="/Admin/login.html" class="card">
+            <span class="icon">🏢</span>
+            <div class="role-title">Command Center</div>
+            <div class="role-desc">For Dispatchers & Admins. Monitor fleet, assign routes, and track analytics.</div>
+            <span class="btn-fake">ACCESS ADMIN LOGIN &rarr;</span>
+        </a>
+
+        <a href="/Driver/login.html" class="card">
+            <span class="icon">🚛</span>
+            <div class="role-title">Fleet Portal</div>
+            <div class="role-desc">For Truck Drivers. View active routes, log pickups, and report issues.</div>
+            <span class="btn-fake">ACCESS DRIVER LOGIN &rarr;</span>
+        </a>
+
+        <a href="/Customer/login.html" class="card">
+            <span class="icon">🏡</span>
+            <div class="role-title">Resident Services</div>
+            <div class="role-desc">For Kano Citizens. Schedule pickups, pay bills, and report overflowing bins.</div>
+            <span class="btn-fake">ACCESS RESIDENT LOGIN &rarr;</span>
+        </a>
+
+    </div>
+
+    <div style="text-align: center; margin-top: 4rem; color: #94a3b8; font-size: 0.8rem;">
+        &copy; 2026 Kano CleanRoute System. Secure Access Only.
+    </div>
+
+</body>
+</html>

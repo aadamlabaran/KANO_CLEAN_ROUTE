@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Kano CleanRoute</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-blue-50 flex items-center justify-center min-h-screen font-sans py-10">
+
+    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full relative">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-emerald-600">Create Resident Account</h3>
+            <p class="text-gray-600 text-sm">Join KCR to manage your waste collection.</p>
+        </div>
+
+        <form id="registerForm" class="space-y-3">
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase">Full Name</label>
+                    <input type="text" id="reg-name" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase">Email / Phone</label>
+                    <input type="text" id="reg-email" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold text-gray-700 uppercase">Street Address</label>
+                    <input type="text" id="reg-address" placeholder="e.g. Bello Road" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase">House No.</label>
+                    <input type="text" id="reg-house" placeholder="No. 5" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase">State</label>
+                    <select id="reg-state" required class="w-full border p-2 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500">
+                        <option value="">Select State</option>
+                        </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase">LGA</label>
+                    <select id="reg-lga" disabled required class="w-full border p-2 rounded-lg bg-gray-100 focus:ring-2 focus:ring-emerald-500">
+                        <option value="">Select State First</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase">Password</label>
+                <input type="password" id="reg-pass" required class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+
+            <div id="reg-error" class="text-red-500 text-sm hidden text-center font-bold">User already exists!</div>
+
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md mt-4 transition-transform hover:scale-[1.02]">
+                VERIFY & REGISTER
+            </button>
+        </form>
+        
+        <p class="text-sm text-center text-gray-500 mt-6">
+            Already registered? <a href="login.html" class="text-emerald-600 font-bold hover:underline">Log In</a>
+        </p>
+    </div>
+
+    <div id="otp-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center">
+            <h2 class="text-xl font-bold text-emerald-600 mb-2">Verify Email</h2>
+            <p class="text-gray-600 text-sm mb-4">We sent a 4-digit code to your email.</p>
+            
+            <input type="text" id="otp-input" placeholder="Enter Code (e.g. 1234)" maxlength="4" class="w-full text-center text-2xl tracking-widest border border-gray-300 p-3 rounded-lg mb-4 font-bold">
+            
+            <button onclick="verifyOTP()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">CONFIRM CODE</button>
+            <button onclick="closeOtpModal()" class="w-full mt-2 text-gray-400 text-sm hover:text-gray-600">Cancel</button>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

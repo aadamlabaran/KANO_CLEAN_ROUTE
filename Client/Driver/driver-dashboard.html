@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KANO CLEANROUTE | Driver Dashboard</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/history.js"></script>
+
+    <style>
+        /* --- DESIGN SYSTEM --- */
+        :root {
+            --brand-primary: #047857; --brand-light: #10b981; --brand-bg: #ecfdf5;
+            --accent: #0891b2; --warning: #f59e0b; --danger: #ef4444;
+            --text-main: #111827; --text-muted: #6b7280; --surface: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f3f4f6; color: var(--text-main); }
+        .hidden { display: none !important; }
+        .flex { display: flex; } .flex-col { flex-direction: column; }
+        .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; } .w-full { width: 100%; }
+        .font-bold { font-weight: 600; } .text-sm { font-size: 0.875rem; } .text-xs { font-size: 0.75rem; }
+        .text-brand { color: var(--brand-primary); } .text-danger { color: var(--danger); }
+        
+        .btn { padding: 0.625rem 1.25rem; border-radius: 0.375rem; font-weight: 600; cursor: pointer; border: none; background: var(--brand-primary); color: white; }
+        .btn:hover { background: #065f46; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-danger { background: var(--danger); color: white; }
+        
+        .card { background: var(--surface); border-radius: 0.75rem; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .input-field { width: 100%; padding: 0.75rem; border-radius: 0.375rem; border: 1px solid #d1d5db; }
+        
+        /* HEADER (Driver's Nav) */
+        header { background: white; padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        
+        .main-container { max-width: 1400px; margin: 2rem auto; padding: 0 1rem; display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        #map-frame { height: 500px; border-radius: 0.75rem; border: 2px solid var(--border); z-index: 1; }
+        
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: #fff7ed; color: #c2410c; } .badge-done { background: #ecfdf5; color: #047857; } .badge-urgent { background: #fef2f2; color: #b91c1c; }
+        .list-item { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 500px; }
+
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 1rem; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; z-index: 1000; transition: top 0.5s ease; }
+
+        @media (max-width: 768px) { .main-container { grid-template-columns: 1fr; } #map-frame { height: 300px; } header { padding: 0 1rem; } }
+    </style>
+</head>
+<body>
+
+    <div id="toast">
+        <div style="font-size: 1.5rem;">📢</div>
+        <div>
+            <div style="font-weight: bold; font-size: 0.9rem;">NEW ALERT</div>
+            <div id="toast-msg" style="font-size: 0.85rem; opacity: 0.9;"></div>
+        </div>
+    </div>
+
+    <header>
+        <div class="flex items-center gap-2">
+            <span style="font-size: 1.5rem;">🚛</span>
+            <div><div class="font-bold text-brand">KANO CLEANROUTE</div><div class="text-xs text-muted">Field Operations</div></div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:block text-sm text-right">
+                <div class="font-bold">Driver 402</div>
+                <div class="text-xs text-muted" id="truck-display">TK-03</div>
+            </div>
+            <button onclick="window.location.href='login.html'" class="btn btn-outline text-sm">Logout</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="flex flex-col gap-4">
+            <div class="card" style="padding: 0; overflow: hidden; border: none;">
+                <div class="flex justify-between items-center" style="padding: 1rem; background: white; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0; font-size: 1.1rem;">Live Route Map</h3>
+                    <span class="badge badge-done">Online</span>
+                </div>
+                <div id="map-frame"></div>
+            </div>
+
+            <div class="card">
+                <div class="flex gap-2" style="border-bottom: 2px solid var(--border); margin-bottom: 1rem; padding-bottom: 0.5rem; overflow-x: auto;">
+                    <button onclick="switchTab('jobs')" id="tab-jobs" class="text-sm font-bold text-brand" style="background: none; border: none; cursor: pointer; white-space: nowrap;">MY ROUTE</button>
+                    <span style="color: #d1d5db;">|</span>
+                    <button onclick="switchTab('pickups')" id="tab-pickups" class="text-sm font-bold text-muted" style="background: none; border: none; cursor: pointer; white-space: nowrap;">REQUESTS <span id="pickup-badge" class="badge badge-urgent hidden">0</span></button>
+                    <span style="color: #d1d5db;">|</span>
+                    <button onclick="switchTab('history')" id="tab-history" class="text-sm font-bold text-muted" style="background: none; border: none; cursor: pointer; white-space: nowrap;">COMPLETED</button>
+                </div>
+                
+                <div id="list-jobs"><ul id="route-list" style="padding: 0; margin: 0; list-style: none;"></ul></div>
+                
+                <div id="list-pickups" class="hidden">
+                    <ul id="pickup-list" style="padding: 0; margin: 0; list-style: none;">
+                        <li class="list-item text-muted">Checking for requests...</li>
+                    </ul>
+                </div>
+                
+                <div id="list-history" class="hidden">
+                    <ul id="history-list-ui" style="padding: 0; margin: 0; list-style: none;">
+                        <li class="list-item text-muted">No jobs completed yet.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+            <div class="card" style="border-top: 4px solid var(--brand-primary);">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span class="text-xs font-bold text-muted uppercase">Current Stop</span>
+                        <h2 id="panel-address" style="margin: 0.25rem 0; font-size: 1.25rem;">No Active Job</h2>
+                        <div id="panel-type" class="text-sm text-brand font-bold">---</div>
+                    </div>
+                    <div id="panel-id" class="badge badge-pending">#--</div>
+                </div>
+                <div class="text-sm" style="background: #f3f4f6; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <strong>Instructions:</strong> <span id="panel-notes">---</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="openLogModal()" id="btn-log-action" class="btn w-full" disabled>✅ LOG COMPLETION</button>
+                    <button onclick="notifyCurrentResident()" id="btn-notify-action" class="btn btn-outline w-full" disabled>📢 NOTIFY RESIDENT</button>
+                    <button onclick="reportIssue()" id="btn-report-action" class="btn btn-danger w-full" disabled>⚠️ REPORT ISSUE</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0; font-size: 1rem;">Vehicle Metrics</h3>
+                <div class="flex flex-col gap-3 mt-4">
+                    <div class="flex justify-between text-sm"><span>Load Capacity</span><strong id="stat-load">0%</strong></div>
+                    <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;"><div id="bar-load" style="width: 0%; height: 100%; background: var(--brand-primary); transition: width 0.5s;"></div></div>
+                    <div class="flex justify-between text-sm mt-2"><span>Fuel Level</span><strong>76%</strong></div>
+                    <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;"><div style="width: 76%; height: 100%; background: var(--warning);"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-log" class="hidden modal-overlay">
+        <div class="modal-box">
+            <h2 style="margin-top: 0;">Log Job Completion</h2>
+            <form onsubmit="event.preventDefault(); submitLog();" class="flex flex-col gap-4 mt-4">
+                <div class="input-group"><label>Estimated Weight (Tons)</label><input type="number" id="log-weight" step="0.1" value="1.5" class="input-field" style="text-align: center; font-size: 1.5rem; font-weight: bold;"></div>
+                <div class="flex gap-2 mt-4"><button type="button" onclick="closeModals()" class="btn btn-outline w-full">Cancel</button><button type="submit" class="btn w-full">CONFIRM LOG</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const state = { 
+            jobs: [
+                { id: 101, lat: 12.0022, lng: 8.5919, address: "Bayero Univ. Campus", type: "Institutional", status: 'pending', notes: "Enter via West Gate." },
+                { id: 102, lat: 11.9964, lng: 8.5167, address: "Kano Emir's Palace", type: "Residential", status: 'pending', notes: "Restricted access. Call security." },
+                { id: 103, lat: 11.9764, lng: 8.5367, address: "Sabon Gari Market", type: "Commercial", status: 'pending', notes: "Heavy traffic area." }
+            ], 
+            pickups: [], 
+            currentIndex: 0, 
+            load: 15 
+        };
+
+        let map, markers = [];
+
+        window.onload = function() {
+            setTimeout(() => {
+                map = L.map('map-frame').setView([11.9964, 8.5167], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                renderMapMarkers();
+                updateUI();
+                startSignalListener();
+                loadDriverHistory(); // NEW: Load history on start
+            }, 500);
+        };
+
+        // --- NEW: TAB SWITCHING LOGIC ---
+        function switchTab(tab) {
+            // Hide all
+            document.getElementById('list-jobs').classList.add('hidden');
+            document.getElementById('list-pickups').classList.add('hidden');
+            document.getElementById('list-history').classList.add('hidden');
+            
+            // Reset Colors
+            ['jobs', 'pickups', 'history'].forEach(t => {
+                document.getElementById('tab-'+t).classList.remove('text-brand');
+                document.getElementById('tab-'+t).classList.add('text-muted');
+            });
+
+            // Show Selected
+            document.getElementById('list-'+tab).classList.remove('hidden');
+            document.getElementById('tab-'+tab).classList.add('text-brand');
+            document.getElementById('tab-'+tab).classList.remove('text-muted');
+
+            if (tab === 'pickups') renderPickups();
+            if (tab === 'history') loadDriverHistory();
+        }
+
+        function startSignalListener() {
+            setInterval(() => {
+                const adminSignal = localStorage.getItem('ksc_driver_msg');
+                if (adminSignal) {
+                    const data = JSON.parse(adminSignal);
+                    showToast(`🔔 ${data.message}`);
+                    if(data.truck) document.getElementById('truck-display').innerText = data.truck;
+                    localStorage.removeItem('ksc_driver_msg');
+                }
+
+                const residentSignal = localStorage.getItem('ksc_pickup_signal');
+                if (residentSignal) {
+                    const data = JSON.parse(residentSignal);
+                    showToast(`⚠️ Pickup Request: ${data.address}`);
+                    state.pickups.push({ id: Date.now(), address: data.address, time: "Just Now", status: "New" });
+                    
+                    const badge = document.getElementById('pickup-badge');
+                    badge.classList.remove('hidden');
+                    badge.innerText = state.pickups.length;
+                    
+                    if(!document.getElementById('list-pickups').classList.contains('hidden')) renderPickups();
+                    localStorage.removeItem('ksc_pickup_signal');
+                }
+            }, 2000);
+        }
+
+        function notifyCurrentResident() {
+            const currentJob = state.jobs[state.currentIndex];
+            if(currentJob) {
+                const alertData = {
+                    driver: "Driver 402",
+                    message: `Driver is approaching ${currentJob.address}. Please have bins ready.`
+                };
+                localStorage.setItem('ksc_client_alert', JSON.stringify(alertData));
+                alert(`✅ Notification sent to Resident at ${currentJob.address}`);
+            }
+        }
+
+        function submitLog() {
+            const weight = parseFloat(document.getElementById('log-weight').value);
+            const currentJob = state.jobs[state.currentIndex];
+            
+            // 1. Mark as Done Visually
+            currentJob.status = 'done';
+            state.load = Math.min(100, state.load + (weight * 10));
+            
+            // 2. SAVE TO HISTORY
+            const completedJob = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                address: currentJob.address,
+                driver: "Driver 402 (Ali)",
+                weight: weight + " Tons",
+                rating: null 
+            };
+
+            const historyDB = JSON.parse(localStorage.getItem('kcr_service_history')) || [];
+            historyDB.push(completedJob);
+            localStorage.setItem('kcr_service_history', JSON.stringify(historyDB));
+
+            // 3. Notify Resident
+            const alertData = {
+                driver: "System",
+                message: `✅ Pickup Completed at ${currentJob.address}. Please rate your service.`
+            };
+            localStorage.setItem('ksc_client_alert', JSON.stringify(alertData));
+
+            // 4. Update UI
+            state.currentIndex++;
+            closeModals(); 
+            updateUI(); 
+            renderMapMarkers();
+            
+            // Auto-switch to history to show it was added
+            switchTab('history');
+        }
+
+        // --- NEW: LOAD DRIVER HISTORY ---
+        function loadDriverHistory() {
+            const list = document.getElementById('history-list-ui');
+            const db = JSON.parse(localStorage.getItem('kcr_service_history')) || [];
+            
+            // Filter only for this driver (Simulated as "Driver 402")
+            const myJobs = db.filter(job => job.driver.includes("Driver 402")).reverse();
+
+            if (myJobs.length === 0) {
+                list.innerHTML = '<li class="list-item text-muted">No completed jobs yet.</li>';
+                return;
+            }
+
+            list.innerHTML = myJobs.map(job => `
+                <li class="list-item">
+                    <div>
+                        <div class="font-bold text-sm">✅ ${job.address}</div>
+                        <div class="text-xs text-muted">Weight: ${job.weight} | Time: ${job.time}</div>
+                    </div>
+                    ${job.rating ? `<span class="text-yellow-500 font-bold">★ ${job.rating}</span>` : `<span class="text-xs text-gray-400">Not rated</span>`}
+                </li>
+            `).join('');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.style.top = "20px";
+            setTimeout(() => { toast.style.top = "-100px"; }, 5000);
+        }
+
+        function renderMapMarkers() {
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            state.jobs.forEach((job, index) => {
+                if(job.status === 'done') return;
+                const isCurrent = index === state.currentIndex;
+                const color = isCurrent ? '#ef4444' : '#10b981';
+                const marker = L.circleMarker([job.lat, job.lng], { color: color, fillColor: color, fillOpacity: 0.8, radius: isCurrent ? 12 : 8 }).addTo(map).bindPopup(`<b>${job.address}</b>`);
+                markers.push(marker);
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('route-list').innerHTML = state.jobs.map((job, idx) => {
+                let badge = job.status === 'done' ? 'badge-done' : (idx === state.currentIndex ? 'badge-urgent' : 'badge-pending');
+                return `<li class="list-item" style="opacity: ${job.status === 'done' ? 0.5 : 1}"><div><div class="font-bold text-sm">${job.address}</div><div class="text-xs text-muted">${job.type}</div></div><span class="badge ${badge}">${job.status}</span></li>`;
+            }).join('');
+
+            const current = state.jobs[state.currentIndex];
+            if(current) {
+                document.getElementById('panel-address').innerText = current.address;
+                document.getElementById('panel-type').innerText = current.type;
+                document.getElementById('panel-id').innerText = `#${current.id}`;
+                document.getElementById('panel-notes').innerText = current.notes;
+                
+                document.getElementById('btn-log-action').disabled = false;
+                document.getElementById('btn-notify-action').disabled = false;
+                document.getElementById('btn-report-action').disabled = false;
+            } else {
+                document.getElementById('panel-address').innerText = "All Jobs Completed";
+                document.getElementById('btn-log-action').disabled = true;
+                document.getElementById('btn-notify-action').disabled = true;
+                document.getElementById('btn-report-action').disabled = true;
+            }
+            document.getElementById('stat-load').innerText = `${state.load}%`;
+            document.getElementById('bar-load').style.width = `${state.load}%`;
+        }
+
+        function renderPickups() {
+             const list = document.getElementById('pickup-list');
+             if(state.pickups.length === 0) {
+                list.innerHTML = '<li class="list-item text-muted">No new requests.</li>';
+                return;
+             }
+             list.innerHTML = state.pickups.map(p => `
+                <li class="list-item" style="background: #fff7ed;">
+                    <div>
+                        <div class="font-bold text-danger">⚠️ ${p.address}</div>
+                        <div class="text-xs text-muted">Time: ${p.time}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function openLogModal() { document.getElementById('modal-log').classList.remove('hidden'); }
+        function closeModals() { document.getElementById('modal-log').classList.add('hidden'); }
+    </script>
+</body>
+</html>

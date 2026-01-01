@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KANO CLEANROUTE | Command Center</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* --- DESIGN SYSTEM --- */
+        :root {
+            --bg-body: #f8fafc; --surface: #ffffff;
+            --primary: #0f766e; --primary-dark: #115e59;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --border: #e2e8f0; --success: #10b981; --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Inter, sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        .flex { display: flex; } .items-center { align-items: center; } .gap-2 { gap: 0.5rem; } .font-bold { font-weight: 700; }
+        .hidden { display: none; }
+        
+        /* HEADER */
+        header { background: var(--surface); border-bottom: 1px solid var(--border); height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; flex-shrink: 0; }
+        .brand-logo { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        
+        /* LAYOUT */
+        main { flex: 1; padding: 1.5rem; overflow-y: auto; display: grid; grid-template-columns: 3fr 1fr; grid-template-rows: auto 1fr; gap: 1.5rem; max-width: 1800px; margin: 0 auto; width: 100%; }
+        
+        /* CARDS */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05); }
+        .card-header { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        
+        /* STATS */
+        .stats-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
+        .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+
+        /* MAP & OPERATIONS */
+        .main-col { display: flex; flex-direction: column; gap: 1.5rem; }
+        .map-section { flex: 2; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; min-height: 400px; }
+        #map-container { flex: 1; background: #e2e8f0; }
+
+        /* MANAGEMENT PANEL (New Feature) */
+        .ops-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; flex: 1; }
+        
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .form-select, .form-input, textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; }
+        
+        .btn { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 4px; border: none; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn:hover { background: var(--primary-dark); }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); width: auto; }
+
+        /* SIDEBAR */
+        .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+        .alert-box { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; border-radius: 4px; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        
+        /* PORTAL LINKS */
+        .portal-link { display: flex; align-items: center; gap: 10px; padding: 0.8rem; border: 1px solid var(--border); border-radius: 4px; text-decoration: none; color: var(--text-main); font-size: 0.9rem; transition: 0.2s; background: #f8fafc; }
+        .portal-link:hover { background: white; border-color: var(--primary); transform: translateX(5px); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-logo"><span style="font-size: 1.5rem;">♻️</span> KANO CLEANROUTE</div>
+        <div class="flex items-center gap-4">
+            <span style="font-size: 0.8rem; font-weight: bold; color: #15803d; background: #dcfce7; padding: 4px 10px; border-radius: 4px;">● SYSTEM ONLINE</span>
+            <button onclick="window.location.href='login.html'" class="btn-outline" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">LOGOUT</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="stats-row">
+            <div class="card">
+                <div class="stat-label">Daily Volume</div>
+                <div class="stat-value">124.5 T</div>
+                <div style="font-size: 0.75rem; color: var(--success);">▲ 12% vs Avg</div>
+            </div>
+            <div class="card">
+                <div class="stat-label">Active Fleet</div>
+                <div class="stat-value"><span id="active-count">3</span> / 5</div>
+                <div style="font-size: 0.75rem; color: #64748b;">Trucks Deployed</div>
+            </div>
+            <div class="card">
+                <div class="stat-label">Critical Alerts</div>
+                <div class="stat-value" style="color: var(--danger);">2</div>
+                <div style="font-size: 0.75rem;">Action Required</div>
+            </div>
+            <div class="card">
+                <div class="stat-label">Efficiency</div>
+                <div class="stat-value">94%</div>
+                <div style="width: 100%; height: 4px; background: #e2e8f0; margin-top: 5px;"><div style="width: 94%; height: 100%; background: var(--primary);"></div></div>
+            </div>
+        </div>
+
+        <div class="main-col">
+            <div class="map-section">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 700;">Live Fleet Tracking</div>
+                <div id="map-container"></div>
+            </div>
+
+            <div class="ops-panel">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span>📋 Assign Driver to Truck</span>
+                        <span style="font-size: 1.2rem;">🚛</span>
+                    </div>
+                    <form onsubmit="event.preventDefault(); assignDriver();">
+                        <div class="form-group">
+                            <label>Select Truck</label>
+                            <select id="truck-select" class="form-select">
+                                <option value="TK-01">TK-01 (Heavy Loader)</option>
+                                <option value="TK-02">TK-02 (Compactor)</option>
+                                <option value="TK-03">TK-03 (Side Loader)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assign Driver</label>
+                            <select id="driver-select" class="form-select">
+                                <option value="Aliyu Musa">Aliyu Musa (ID: 402)</option>
+                                <option value="Ibrahim Sani">Ibrahim Sani (ID: 405)</option>
+                                <option value="Fatima Bello">Fatima Bello (ID: 409)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">CONFIRM ASSIGNMENT</button>
+                    </form>
+                    <div id="assignment-log" style="margin-top: 1rem; font-size: 0.8rem; color: var(--success);"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span>📡 Communication Hub</span>
+                        <span style="font-size: 1.2rem;">📢</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Audience</label>
+                        <select id="msg-target" class="form-select">
+                            <option value="all-drivers">All Drivers (Broadcast)</option>
+                            <option value="tk-01">Specific: TK-01</option>
+                            <option value="residents">All Residents (App Alert)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="msg-text" rows="2" placeholder="Type alert here..."></textarea>
+                    </div>
+                    <button onclick="sendMessage()" class="btn btn-warning">SEND ALERT</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">⚠️ Active Issues</div>
+                <div class="alert-box">
+                    <strong>Truck TK-03</strong><br>
+                    Mechanical Fault (Kantin Kwari)
+                </div>
+                <div class="alert-box" style="background: #fffbeb; border-color: #f59e0b;">
+                    <strong>Bin #402</strong><br>
+                    Overflow Reported (Sabon Gari)
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">👀 System Oversight</div>
+                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">Directly access user portals:</p>
+                
+                <a href="/Driver/driver-login.html" target="_blank" class="portal-link">
+                    <span>🚛</span> Open Driver App
+                </a>
+                <br>
+                <a href="/Customer/login.html" target="_blank" class="portal-link">
+                    <span>🏡</span> Open Resident App
+                </a>
+            </div>
+
+            <div class="card" style="flex: 1;">
+                <div class="card-header">Operations Log</div>
+                <ul id="feed-container" style="padding-left: 1rem; font-size: 0.85rem; color: #64748b;"></ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- MAP LOGIC ---
+        const map = L.map('map-container').setView([11.9900, 8.5400], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+        // Mock Truck Data
+        const trucks = [
+            { id: "TK-01", lat: 12.0022, lng: 8.5919, driver: "Unassigned" },
+            { id: "TK-03", lat: 11.9850, lng: 8.5200, driver: "Unassigned" }
+        ];
+
+        trucks.forEach(t => {
+            L.circleMarker([t.lat, t.lng], { color: '#0f766e', radius: 10 }).addTo(map)
+             .bindPopup(`<b>${t.id}</b><br>Status: Active`);
+        });
+
+        // --- ASSIGNMENT LOGIC ---
+      // --- UPDATED ASSIGNMENT LOGIC ---
+function assignDriver() {
+    const truck = document.getElementById('truck-select').value;
+    const driver = document.getElementById('driver-select').value;
+    
+    // 1. Show feedback on Admin screen
+    const log = document.getElementById('assignment-log');
+    log.innerText = `✅ Assigned ${driver} to ${truck}`;
+    addToFeed(`Dispatch: Assigned ${driver} to ${truck}`);
+    
+    // 2. SEND SIGNAL TO DRIVER (The Invisible Link)
+    const assignmentData = {
+        type: 'assignment',
+        driver: driver,
+        truck: truck,
+        message: `You have been assigned to ${truck}. Please start your shift.`,
+        timestamp: new Date().toLocaleTimeString()
+    };
+    
+    // Save to the "Shared Memory" so the Driver tab sees it
+    localStorage.setItem('ksc_driver_msg', JSON.stringify(assignmentData));
+    
+    alert(`Signal Sent to ${driver}'s Dashboard!`);
+}
+            // Show feedback
+            const log = document.getElementById('assignment-log');
+            log.innerText = `✅ Assigned ${driver} to ${truck}`;
+            
+            // Add to Operations Log
+            addToFeed(`Dispatch: Assigned ${driver} to ${truck}`);
+            
+            alert(`System Update:\nDriver: ${driver}\nVehicle: ${truck}\nStatus: LINKED`);
+        }
+
+        // --- COMMUNICATION LOGIC ---
+        function sendMessage() {
+            const target = document.getElementById('msg-target').value;
+            const text = document.getElementById('msg-text').value;
+            
+            if(!text) return alert("Please type a message");
+
+            addToFeed(`Alert sent to [${target}]: "${text}"`);
+            alert(`Message Sent Successfully to ${target}!`);
+            document.getElementById('msg-text').value = ""; // Clear box
+        }
+
+        // --- FEED HELPER ---
+        function addToFeed(text) {
+            const list = document.getElementById('feed-container');
+            const item = document.createElement('li');
+            item.innerText = `${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${text}`;
+            list.prepend(item);
+        }
+
+        // Initial Feed Data
+        addToFeed("System startup complete.");
+        addToFeed("TK-03 reported mechanical issue.");
+    </script>
+</body>
+</html>

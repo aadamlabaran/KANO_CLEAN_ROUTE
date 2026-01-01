@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Kano CleanRoute</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-blue-50 text-gray-800 font-sans leading-relaxed">
+
+    <nav class="sticky top-0 z-50 bg-white shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-2">
+                    <span class="text-4xl text-emerald-600">♻️</span>
+                    <span class="font-bold text-xl tracking-tight text-gray-800 hidden md:block">Kano CleanRoute</span>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <span id="user-display" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Loading...</span>
+                    <button onclick="appLogOut()" class="text-red-500 hover:text-red-700 text-sm font-semibold py-2 px-3">Log Out</button>
+                </div>
+            </div>
+
+            <div class="flex justify-center space-x-3 md:space-x-8 border-t border-blue-100 pt-3 pb-3 overflow-x-auto">
+                <button onclick="switchTab('home')" id="nav-home" class="text-emerald-600 border-b-2 border-emerald-600 px-3 py-2 text-sm font-medium">Home</button>
+                <button onclick="switchTab('schedule')" id="nav-schedule" class="text-gray-500 hover:text-emerald-600 px-3 py-2 text-sm font-medium">My Schedule</button>
+                <button onclick="switchTab('guide')" id="nav-guide" class="text-gray-500 hover:text-emerald-600 px-3 py-2 text-sm font-medium">Recycling Guide</button>
+                <button onclick="switchTab('report')" id="nav-report" class="text-gray-500 hover:text-emerald-600 px-3 py-2 text-sm font-medium">Report Issue</button>
+                <button onclick="switchTab('history')" id="nav-history" class="text-gray-500 hover:text-emerald-600 px-3 py-2 text-sm font-medium">History</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div id="home" class="space-y-8 transition-fade">
+            <div class="bg-gradient-to-br from-emerald-50 to-white p-10 rounded-3xl shadow-lg border border-emerald-100 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900">Clean City, Better Living.</h1>
+                <p class="text-xl opacity-90 mb-8 max-w-2xl mx-auto text-gray-600">
+                    Your home is: <span class="bg-green-100 text-green-800 px-2 rounded text-sm font-bold">SERVICED</span>
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <button onclick="showGenericModal('Bill Payment', 'Redirecting to payment gateway...')" class="bg-amber-500 hover:bg-amber-600 text-white text-lg font-bold py-3 px-8 rounded-xl shadow-lg">💰 Pay My Bill</button>
+                    <button onclick="switchTab('report')" class="bg-white text-cyan-600 hover:bg-gray-50 text-lg font-bold py-3 px-8 rounded-xl shadow-lg border border-cyan-100">🚨 Report Pickup</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                <div onclick="switchTab('schedule')" class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 text-center hover:shadow-md cursor-pointer">
+                    <span class="text-4xl mb-3 block">🗓️</span>
+                    <h3 class="font-bold text-gray-800">Next Pickup</h3>
+                    <p class="text-emerald-600 font-bold mt-2">Tomorrow, 7:00 AM</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 text-center hover:shadow-md">
+                    <span class="text-4xl mb-3 block">🚛</span>
+                    <h3 class="font-bold text-gray-800">Driver Status</h3>
+                    <p id="driver-status-text" class="text-sm text-gray-500 mt-2">No active trucks nearby</p>
+                </div>
+                <div onclick="switchTab('history')" class="bg-white p-6 rounded-xl shadow-sm border border-blue-100 text-center hover:shadow-md cursor-pointer">
+                    <span class="text-4xl mb-3 block">⭐</span>
+                    <h3 class="font-bold text-gray-800">My Ratings</h3>
+                    <p class="text-purple-600 font-bold mt-2">View History</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="schedule" class="hidden space-y-8 transition-fade"></div>
+        
+        <div id="guide" class="hidden space-y-8 transition-fade">
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl mx-auto space-y-6">
+                <h2 class="text-2xl font-bold">Search Disposal Guide</h2>
+                <input type="text" id="guide-search" oninput="filterGuide()" placeholder="Type item (e.g. plastic)..." class="w-full border border-gray-300 rounded-lg p-3 focus:ring-emerald-500" />
+                <div id="guide-results" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <div id="report" class="hidden space-y-8 transition-fade"></div>
+
+        <div id="history" class="hidden space-y-8 transition-fade">
+            <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-emerald-500">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Service History & Ratings</h2>
+                <p class="text-gray-500 mb-6">Track your completed pickups and rate your drivers.</p>
+                
+                <div id="history-list" class="space-y-4">
+                    <p class="text-center text-gray-400 py-8">Loading records...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="generic-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full relative">
+            <button onclick="hideModal('generic-modal')" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">&times;</button>
+            <h3 id="generic-modal-title" class="text-2xl font-bold text-emerald-600 mb-4">Notification</h3>
+            <p class="text-gray-600 mb-6"><span id="generic-modal-text"></span></p>
+            <button onclick="hideModal('generic-modal')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">Close</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/schedule.js"></script>
+    <script src="js/guide.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/history.js"></script>
+
+</body>
+</html>
